@@ -1,0 +1,24 @@
+{
+  "name": "christmas-eve",
+  "version": "1.0.0",
+  "description": "雨は夜更け過ぎにコミットログへと変わるだろう",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hogesuke/christmas-eve.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hogesuke/christmas-eve/issues"
+  },
+  "homepage": "https://github.com/hogesuke/christmas-eve#readme",
+  "devDependencies": {
+    "parcel": "^1.12.4",
+    "typescript": "^3.7.2"
+  }
+}
