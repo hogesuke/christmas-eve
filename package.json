@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/hogesuke/christmas-eve#readme",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
+    "eslint": "^6.7.2",
     "parcel": "^1.12.4",
     "typescript": "^3.7.2"
   }

@@ -1,13 +1,13 @@
 class Hoge {
-    private message: string;
+  private message: string;
 
-    constructor(message: string) {
-        this.message = message;
-    }
+  constructor(message: string) {
+    this.message = message;
+  }
 
-    hello() {
-        return 'Hello!' + this.message;
-    }
+  hello() {
+    return 'Hello!' + this.message;
+  }
 }
 
 const hoge = new Hoge('へいへいへい！');
