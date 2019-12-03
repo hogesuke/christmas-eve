@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Vector2 } from 'three';
-import font from './Sawarabi_Mincho_Regular.json';
+// import font from './Sawarabi_Mincho_Regular.json';
 
 class Canvas {
   private w: number;
@@ -26,7 +26,7 @@ class Canvas {
     this.scrollY = window.scrollY;
 
     // レンダラーを作成
-    // this.renderer = new THREE.WebGLRenderer({ alpha: true });
+    this.renderer = new THREE.WebGLRenderer({ alpha: true });
     this.renderer.setSize(this.w, this.h); // 描画サイズ
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -63,24 +63,26 @@ class Canvas {
     const loader = new THREE.FontLoader();
 
     // loader.load('helvetiker_regular.typeface.json', font => {
-    // loader.load('/Sawarabi_Mincho_Regular.json', font => {
-    const textGeometry = new THREE.TextGeometry('こんにちは、世界。Hello', {
-      font: new THREE.Font(font),
-      size: 40,
-      height: 0,
-      curveSegments: 10 // 曲線に使用する点の数
+    loader.load('Sawarabi_Mincho_Regular.json', font => {
+      const textGeometry = new THREE.TextGeometry('こんにちは、世界。Hello', {
+        font,
+        size: 40,
+        height: 0,
+        curveSegments: 10 // 曲線に使用する点の数
+      });
+
+      const materials = [
+        // new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff, overdraw: 0.5 }),
+        // new THREE.MeshBasicMaterial({ color: 0x000000, overdraw: 0.5 })
+        new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff }),
+        new THREE.MeshBasicMaterial({ color: 0x000000 } )
+      ];
+
+      this.textMesh = new THREE.Mesh(textGeometry, materials);
+      this.textMesh.rotation.x = -0.8;
+
+      this.scene.add(this.textMesh);
     });
-
-    const materials = [
-      new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, overdraw: 0.5 } ),
-      new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
-    ];
-
-    this.textMesh = new THREE.Mesh(textGeometry, materials);
-    this.textMesh.rotation.x = -0.8;
-
-    this.scene.add(this.textMesh);
-    // });
 
     // 描画ループを開始
     this.render();
