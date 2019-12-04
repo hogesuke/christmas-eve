@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { Vector2 } from 'three';
-// import font from './Sawarabi_Mincho_Regular.json';
+import MeshFactory from './mesh-factory';
+import CommitLog from './commit-log';
 
 class Canvas {
   private w: number;
   private h: number;
   private mouse: Vector2;
-  private scrollY: number;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
   private scene: THREE.Scene;
@@ -14,16 +14,13 @@ class Canvas {
   private geo: THREE.BoxGeometry;
   private textMesh: THREE.Mesh;
 
-  constructor() {
+  constructor () {
     // ウィンドウサイズ
     this.w = window.innerWidth;
     this.h = window.innerHeight;
 
     // マウス座標
     this.mouse = new Vector2(0, 0);
-
-    // スクロール量
-    this.scrollY = window.scrollY;
 
     // レンダラーを作成
     this.renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -62,30 +59,19 @@ class Canvas {
 
     const loader = new THREE.FontLoader();
 
-    // loader.load('helvetiker_regular.typeface.json', font => {
-    loader.load('Sawarabi_Mincho_Regular.json', font => {
-      const textGeometry = new THREE.TextGeometry('こんにちは、世界。Hello', {
-        font,
-        size: 40,
-        height: 0,
-        curveSegments: 10 // 曲線に使用する点の数
-      });
-
-      const materials = [
-        // new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff, overdraw: 0.5 }),
-        // new THREE.MeshBasicMaterial({ color: 0x000000, overdraw: 0.5 })
-        new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff }),
-        new THREE.MeshBasicMaterial({ color: 0x000000 } )
-      ];
-
-      this.textMesh = new THREE.Mesh(textGeometry, materials);
-      this.textMesh.rotation.x = -0.8;
-
-      this.scene.add(this.textMesh);
-    });
+    loader.load('Sawarabi_Mincho_Regular.json', font => this.onLoadFont(font));
 
     // 描画ループを開始
     this.render();
+  }
+
+  onLoadFont (font: THREE.Font) {
+    const commitLog = new CommitLog('こんにちは!');
+    const meshFactory = new MeshFactory(font);
+
+    this.textMesh = meshFactory.createMesh(commitLog);
+
+    this.scene.add(this.textMesh);
   }
 
   render () {
@@ -93,7 +79,7 @@ class Canvas {
 
     const sec = performance.now() / 1000;
 
-    // this.textMesh.rotation.y = sec * (Math.PI / 4);
+    this.textMesh.position.y = sec * -100;
 
     this.renderer.render(this.scene, this.camera);
   }
@@ -104,10 +90,6 @@ class Canvas {
 
     this.light.position.x = this.mouse.x;
     this.light.position.y = this.mouse.y;
-  }
-
-  scrolled (y) {
-    this.scrollY = y;
   }
 }
 

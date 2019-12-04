@@ -21,6 +21,9 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
-        "indent": ["error", 2]
+        "indent": ["error", 2],
+        "no-trailing-spaces": "error",
+        "space-before-function-paren": ["error", "always"],
+        '@typescript-eslint/no-unused-vars': [2, { args: 'none' }]
     }
 };
