@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import CommitLog from './commit-log';
+import CommitLogMesh from './commit-log-mesh';
 
-export default class MeshFactory {
+export default class CommitLogMeshFactory {
   private font: THREE.Font;
 
   constructor (font: THREE.Font) {
@@ -21,9 +22,6 @@ export default class MeshFactory {
       new THREE.MeshBasicMaterial({ color: 0x000000 })
     ];
 
-    const mesh = new THREE.Mesh(textGeometry, materials);
-    mesh.rotation.x = -0.8;
-
-    return mesh;
+    return new CommitLogMesh(new THREE.Mesh(textGeometry, materials));
   }
 }

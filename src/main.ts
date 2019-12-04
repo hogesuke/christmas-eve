@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Vector2 } from 'three';
-import MeshFactory from './mesh-factory';
+import CommitLogMeshFactory from './commit-log-mesh-factory';
+import CommitLogMesh from './commit-log-mesh';
 import CommitLog from './commit-log';
 
 class Canvas {
@@ -12,13 +13,15 @@ class Canvas {
   private scene: THREE.Scene;
   private light: THREE.PointLight;
   private geo: THREE.BoxGeometry;
-  private textMesh: THREE.Mesh;
+  private commitLogMeshes: CommitLogMesh[] = [];
 
-  constructor () {
+  constructor (w: number, h: number) {
     // ウィンドウサイズ
-    this.w = window.innerWidth;
-    this.h = window.innerHeight;
+    this.w = w;
+    this.h = h;
+  }
 
+  async run () {
     // マウス座標
     this.mouse = new Vector2(0, 0);
 
@@ -59,19 +62,29 @@ class Canvas {
 
     const loader = new THREE.FontLoader();
 
-    loader.load('Sawarabi_Mincho_Regular.json', font => this.onLoadFont(font));
+    const font = await new Promise<THREE.Font>(resolve => {
+      loader.load('Sawarabi_Mincho_Regular.json', resolve);
+    });
+
+    const meshFactory = new CommitLogMeshFactory(font);
+
+    for (let i = 0; i < 100; i++) {
+      const commitLog = new CommitLog(`#${i}`);
+      const commitLogMesh = meshFactory.createMesh(commitLog);
+
+      const x = Math.floor(Math.random() * 1000);
+      const y = Math.floor(Math.random() * 1000);
+      const z = Math.floor(Math.random() * 1000);
+
+      commitLogMesh.setPosition(x, y, z);
+
+      this.scene.add(commitLogMesh.getRawMesh());
+      this.commitLogMeshes.push(commitLogMesh);
+    }
+
 
     // 描画ループを開始
     this.render();
-  }
-
-  onLoadFont (font: THREE.Font) {
-    const commitLog = new CommitLog('こんにちは!');
-    const meshFactory = new MeshFactory(font);
-
-    this.textMesh = meshFactory.createMesh(commitLog);
-
-    this.scene.add(this.textMesh);
   }
 
   render () {
@@ -79,7 +92,7 @@ class Canvas {
 
     const sec = performance.now() / 1000;
 
-    this.textMesh.position.y = sec * -100;
+    this.commitLogMeshes.forEach(a => a.setPositionY(sec * -100));
 
     this.renderer.render(this.scene, this.camera);
   }
@@ -93,4 +106,5 @@ class Canvas {
   }
 }
 
-new Canvas();
+const canvas = new Canvas(window.innerWidth, window.innerHeight);
+canvas.run();
