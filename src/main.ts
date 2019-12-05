@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Vector2 } from 'three';
-import CommitLogMeshFactory from './commit-log-mesh-factory';
-import CommitLogMesh from './commit-log-mesh';
+import SnowMeshFactory from './snow-mesh-factory';
+import CommitLogMesh from './snow-mesh';
 import CommitLog from './commit-log';
 
 class Canvas {
@@ -13,7 +13,7 @@ class Canvas {
   private scene: THREE.Scene;
   private light: THREE.PointLight;
   private geo: THREE.BoxGeometry;
-  private commitLogMeshes: CommitLogMesh[] = [];
+  private snowMeshes: CommitLogMesh[] = [];
 
   constructor (w: number, h: number) {
     // ウィンドウサイズ
@@ -66,20 +66,20 @@ class Canvas {
       loader.load('Sawarabi_Mincho_Regular.json', resolve);
     });
 
-    const meshFactory = new CommitLogMeshFactory(font);
+    const snowMeshFactory = new SnowMeshFactory(font);
 
     for (let i = 0; i < 300; i++) {
       const commitLog = new CommitLog(`#${i}`);
-      const commitLogMesh = meshFactory.createMesh(commitLog);
+      const snowMesh = snowMeshFactory.createMesh(commitLog);
 
       const x = Math.floor(Math.random() * 2000) - 1000;
       const y = Math.floor(Math.random() * 1000);
       const z = Math.floor(Math.random() * 2000) - 1000;
 
-      commitLogMesh.setInitialPosition(x, y, z);
+      snowMesh.setInitialPosition(x, y, z);
 
-      this.scene.add(commitLogMesh.getRawMesh());
-      this.commitLogMeshes.push(commitLogMesh);
+      this.scene.add(snowMesh.getRawMesh());
+      this.snowMeshes.push(snowMesh);
     }
 
 
@@ -92,7 +92,7 @@ class Canvas {
 
     const sec = performance.now() / 1000;
 
-    this.commitLogMeshes.forEach(a => a.setPositionY(a.getInitialPosition().y - sec * 100));
+    this.snowMeshes.forEach(a => a.setPositionY(a.getInitialPosition().y - sec * 100));
 
     this.renderer.render(this.scene, this.camera);
   }

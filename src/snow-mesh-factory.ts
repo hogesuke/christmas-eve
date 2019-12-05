@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import CommitLog from './commit-log';
-import CommitLogMesh from './commit-log-mesh';
+import SnowMesh from './snow-mesh';
 
-export default class CommitLogMeshFactory {
+export default class SnowMeshFactory {
   private font: THREE.Font;
 
   constructor (font: THREE.Font) {
@@ -22,6 +22,6 @@ export default class CommitLogMeshFactory {
       new THREE.MeshBasicMaterial({ color: 0x000000 })
     ];
 
-    return new CommitLogMesh(new THREE.Mesh(textGeometry, materials));
+    return new SnowMesh(new THREE.Mesh(textGeometry, materials));
   }
 }
