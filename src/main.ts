@@ -68,15 +68,15 @@ class Canvas {
 
     const meshFactory = new CommitLogMeshFactory(font);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 300; i++) {
       const commitLog = new CommitLog(`#${i}`);
       const commitLogMesh = meshFactory.createMesh(commitLog);
 
-      const x = Math.floor(Math.random() * 1000);
+      const x = Math.floor(Math.random() * 2000) - 1000;
       const y = Math.floor(Math.random() * 1000);
-      const z = Math.floor(Math.random() * 1000);
+      const z = Math.floor(Math.random() * 2000) - 1000;
 
-      commitLogMesh.setPosition(x, y, z);
+      commitLogMesh.setInitialPosition(x, y, z);
 
       this.scene.add(commitLogMesh.getRawMesh());
       this.commitLogMeshes.push(commitLogMesh);
@@ -92,7 +92,7 @@ class Canvas {
 
     const sec = performance.now() / 1000;
 
-    this.commitLogMeshes.forEach(a => a.setPositionY(sec * -100));
+    this.commitLogMeshes.forEach(a => a.setPositionY(a.getInitialPosition().y - sec * 100));
 
     this.renderer.render(this.scene, this.camera);
   }
