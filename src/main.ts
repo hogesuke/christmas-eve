@@ -8,6 +8,7 @@ import {
   FontLoader,
   Font
 } from 'three';
+import { DeviceOrientationControls } from './DeviceOrientationControls';
 import SnowMeshFactory from './snow-mesh-factory';
 import CommitLogMesh from './snow-mesh';
 import CommitLog from './commit-log';
@@ -20,6 +21,7 @@ class Canvas {
   private camera: PerspectiveCamera;
   private scene: Scene;
   private light: PointLight;
+  private controls: DeviceOrientationControls;
   private geo: BoxGeometry;
   private snowMeshes: CommitLogMesh[] = [];
 
@@ -55,6 +57,10 @@ class Canvas {
     // カメラを作成（視野角、画面のアスペクト比、カメラに映る最短距離、カメラに映る再遠距離）
     this.camera = new PerspectiveCamera(fov, this.w / this.h, 1, dist * 2);
     this.camera.position.z = dist; // カメラを遠ざける
+
+    // ジャイロ
+    this.controls = new DeviceOrientationControls(this.camera, true);
+    this.controls.connect();
 
     // シーンを作成
     this.scene = new Scene();
@@ -102,6 +108,8 @@ class Canvas {
     const sec = performance.now() / 1000;
 
     this.snowMeshes.forEach(a => a.setPositionY(a.getInitialPosition().y - sec * 100));
+
+    this.controls.update();
 
     this.renderer.render(this.scene, this.camera);
   }
