@@ -59,7 +59,7 @@ class Canvas {
     this.camera.position.z = dist; // カメラを遠ざける
 
     // ジャイロ
-    this.controls = new DeviceOrientationControls(this.camera, true);
+    this.controls = new DeviceOrientationControls(this.camera);
     this.controls.connect();
 
     // シーンを作成
