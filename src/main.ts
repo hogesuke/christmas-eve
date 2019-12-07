@@ -28,6 +28,7 @@ class Canvas {
     // レンダラーを作成
     this.renderer = new THREE.WebGLRenderer({ alpha: true });
     this.renderer.setSize(this.w, this.h); // 描画サイズ
+    this.renderer.setClearColor(0x000000, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
     // #canvas-containerにレンダラーのcanvasを追加
@@ -58,7 +59,7 @@ class Canvas {
     this.scene.add(this.light);
 
     // 立方体のジオメトリを作成（幅、高さ、奥行き）
-    const geo = new THREE.BoxGeometry(300, 300, 300);
+    // const geo = new THREE.BoxGeometry(300, 300, 300);
 
     const loader = new THREE.FontLoader();
 
@@ -68,20 +69,19 @@ class Canvas {
 
     const snowMeshFactory = new SnowMeshFactory(font);
 
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 10; i++) {
       const commitLog = new CommitLog(`#${i}`);
       const snowMesh = snowMeshFactory.createMesh(commitLog);
 
-      const x = Math.floor(Math.random() * 2000) - 1000;
-      const y = Math.floor(Math.random() * 1000);
-      const z = Math.floor(Math.random() * 2000) - 1000;
+      // const x = Math.floor(Math.random() * 2000) - 1000;
+      // const y = Math.floor(Math.random() * 1000);
+      // const z = Math.floor(Math.random() * 2000) - 1000;
 
-      snowMesh.setInitialPosition(x, y, z);
+      snowMesh.setInitialPosition(0, 0, 0);
 
       this.scene.add(snowMesh.getRawMesh());
       this.snowMeshes.push(snowMesh);
     }
-
 
     // 描画ループを開始
     this.render();
@@ -90,9 +90,9 @@ class Canvas {
   render () {
     requestAnimationFrame(() => { this.render() });
 
-    const sec = performance.now() / 1000;
+    // const sec = performance.now() / 1000;
 
-    this.snowMeshes.forEach(a => a.setPositionY(a.getInitialPosition().y - sec * 100));
+    // this.snowMeshes.forEach(a => a.setPositionY(a.getInitialPosition().y - sec * 100));
 
     this.renderer.render(this.scene, this.camera);
   }
