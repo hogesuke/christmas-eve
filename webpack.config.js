@@ -1,5 +1,7 @@
 const path = require('path');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 module.exports = {
   mode: "development",
   resolve: {
@@ -17,6 +19,10 @@ module.exports = {
         use: "ts-loader"
       }
     ]
+  },
+  devtool: isProduction ? '' : 'inline-cheap-source-map',
+  optimization: {
+    minimize: true
   },
   devServer: {
     open: true,
