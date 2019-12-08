@@ -21,6 +21,9 @@ module.exports = {
     ]
   },
   devtool: isProduction ? '' : 'inline-cheap-source-map',
+  optimization: {
+    minimize: true
+  },
   devServer: {
     open: true,
     // openPage: "index.html",
