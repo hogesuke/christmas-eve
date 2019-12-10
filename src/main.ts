@@ -6,7 +6,6 @@ import {
   Scene,
   PointLight,
   BoxGeometry,
-  SphereGeometry,
   SphereBufferGeometry,
   Vector2,
   Vector3,
@@ -110,8 +109,8 @@ class Canvas {
       this.snowMeshes.push(snowMesh);
     }
 
-    const geometry = new SphereBufferGeometry(500, 600, 400);
-    geometry.scale(- 1, 1, 1);
+    const geometry = new SphereBufferGeometry(1000, 32, 32);
+    geometry.scale(-1, 1, 1);
 
     const material = new MeshBasicMaterial({ map: texture });
 
