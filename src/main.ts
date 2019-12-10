@@ -6,7 +6,6 @@ import {
   Scene,
   PointLight,
   BoxGeometry,
-  SphereGeometry,
   SphereBufferGeometry,
   Vector2,
   Vector3,
@@ -32,6 +31,7 @@ class Canvas {
   private controls: DeviceOrientationControls;
   private geo: BoxGeometry;
   private snowMeshes: CommitLogMesh[] = [];
+  private prevTimestamp: DOMHighResTimeStamp = 0;
 
   constructor (w: number, h: number) {
     // ウィンドウサイズ
@@ -109,8 +109,8 @@ class Canvas {
       this.snowMeshes.push(snowMesh);
     }
 
-    const geometry = new SphereBufferGeometry( 500, 60, 40 );
-    geometry.scale(- 1, 1, 1);
+    const geometry = new SphereBufferGeometry(1000, 32, 32);
+    geometry.scale(-1, 1, 1);
 
     const material = new MeshBasicMaterial({ map: texture });
 
@@ -125,9 +125,18 @@ class Canvas {
   render () {
     requestAnimationFrame(() => { this.render() });
 
-    const sec = performance.now() / 1000;
+    const currentTimestamp = performance.now();
+    const sec = (currentTimestamp - this.prevTimestamp) / 1000;
 
-    this.snowMeshes.forEach(a => a.setPositionY(a.getInitialPosition().y - sec * 100));
+    this.prevTimestamp = currentTimestamp;
+
+    this.snowMeshes.forEach(a => {
+      if (a.getRawMesh().position.y < -1000) {
+        a.setPositionY(a.getInitialPosition().y)
+      } else {
+        a.setPositionY(a.getRawMesh().position.y - sec * 100)
+      }
+    });
 
     this.controls.update();
 
