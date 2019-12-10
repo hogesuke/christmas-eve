@@ -20,7 +20,7 @@ module.exports = {
       }
     ]
   },
-  devtool: isProduction ? '' : 'inline-cheap-source-map',
+  devtool: isProduction ? false : 'inline-cheap-source-map',
   optimization: {
     minimize: true
   },
