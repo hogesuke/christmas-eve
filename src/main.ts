@@ -16,6 +16,7 @@ import {
   UVMapping
 } from 'three';
 import { DeviceOrientationControls } from './DeviceOrientationControls';
+import { OrbitControls } from './OrbitControls';
 import SnowMeshFactory from './snow-mesh-factory';
 import CommitLogMesh from './snow-mesh';
 import CommitLog from './commit-log';
@@ -28,7 +29,7 @@ class Canvas {
   private camera: PerspectiveCamera;
   private scene: Scene;
   private light: PointLight;
-  private controls: DeviceOrientationControls;
+  private controls: DeviceOrientationControls | OrbitControls;
   private geo: BoxGeometry;
   private snowMeshes: CommitLogMesh[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
@@ -69,9 +70,26 @@ class Canvas {
     this.camera = new PerspectiveCamera(fov, this.w / this.h, 1, dist * 2);
     this.camera.lookAt(new Vector3( 0, 0, 0 ));
 
-    // ジャイロ
-    this.controls = new DeviceOrientationControls(this.camera);
-    this.controls.connect();
+    // Controls
+    const isAndroid = /Android/.test(navigator.userAgent);
+    const isIOS = /(iPad|iPhone|iPod)/.test(navigator.userAgent);
+
+    if (isAndroid || isIOS) {
+      this.controls = new DeviceOrientationControls(this.camera);
+      this.controls.connect();
+    } else {
+      this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+      this.controls.target.set(0, 0, 1);
+      this.controls.autoRotate = true;
+      this.controls.enableDamping = true;
+      this.controls.autoRotateSpeed = 0.8
+      this.controls.rotateSpeed = -0.3;
+      this.controls.dampingFactor = 0.1;
+      this.controls.screenSpacePanning = false;
+      this.controls.minDistance = 1;
+      this.controls.maxDistance = 1;
+      this.controls.maxPolarAngle = Math.PI;
+    }
 
     // ライトを作成
     this.light = new PointLight(0x00ffff);
@@ -95,7 +113,7 @@ class Canvas {
 
     const snowMeshFactory = new SnowMeshFactory(font);
 
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 30; i++) {
       const commitLog = new CommitLog(`#${i}`);
       const snowMesh = snowMeshFactory.createMesh(commitLog);
 
