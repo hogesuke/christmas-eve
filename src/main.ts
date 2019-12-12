@@ -5,7 +5,6 @@ import {
   MeshBasicMaterial,
   Scene,
   PointLight,
-  BoxGeometry,
   SphereBufferGeometry,
   Vector2,
   Vector3,
@@ -17,8 +16,8 @@ import {
 } from 'three';
 import { DeviceOrientationControls } from './DeviceOrientationControls';
 import { OrbitControls } from './OrbitControls';
-import SnowMeshFactory from './snow-mesh-factory';
-import CommitLogMesh from './snow-mesh';
+import MessageMeshFactory from './MessageMeshFactory';
+import MessageMesh from './MessageMesh';
 import CommitLog from './commit-log';
 
 class Canvas {
@@ -30,8 +29,7 @@ class Canvas {
   private scene: Scene;
   private light: PointLight;
   private controls: DeviceOrientationControls | OrbitControls;
-  private geo: BoxGeometry;
-  private snowMeshes: CommitLogMesh[] = [];
+  private messageMeshes: MessageMesh[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
 
   constructor (w: number, h: number) {
@@ -111,20 +109,20 @@ class Canvas {
       ImageUtils.loadTexture('360_night01_1200-min.jpg', UVMapping, resolve);
     });
 
-    const snowMeshFactory = new SnowMeshFactory(font);
+    const messageMeshFactory = new MessageMeshFactory(font);
 
     for (let i = 0; i < 30; i++) {
       const commitLog = new CommitLog(`#${i}`);
-      const snowMesh = snowMeshFactory.createMesh(commitLog);
+      const messageMesh = messageMeshFactory.createMesh(commitLog);
 
       const x = Math.floor(Math.random() * 2000) - 1000;
       const y = Math.floor(Math.random() * 1000);
       const z = Math.floor(Math.random() * 2000) - 1000;
 
-      snowMesh.setInitialPosition(x, y, z);
+      messageMesh.setInitialPosition(x, y, z);
 
-      this.scene.add(snowMesh.getRawMesh());
-      this.snowMeshes.push(snowMesh);
+      this.scene.add(messageMesh.getRawMesh());
+      this.messageMeshes.push(messageMesh);
     }
 
     const geometry = new SphereBufferGeometry(1000, 32, 32);
@@ -148,7 +146,7 @@ class Canvas {
 
     this.prevTimestamp = currentTimestamp;
 
-    this.snowMeshes.forEach(a => {
+    this.messageMeshes.forEach(a => {
       if (a.getRawMesh().position.y < -1000) {
         a.setPositionY(a.getInitialPosition().y)
       } else {
