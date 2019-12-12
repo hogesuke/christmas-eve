@@ -4,7 +4,7 @@ import {
   Mesh,
   Font
 } from 'three';
-import CommitLog from './commit-log';
+import CommitLog from './CommitLog';
 import MessageMesh from './MessageMesh';
 
 export default class MessageMeshFactory {

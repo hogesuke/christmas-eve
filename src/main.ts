@@ -18,7 +18,7 @@ import { DeviceOrientationControls } from './DeviceOrientationControls';
 import { OrbitControls } from './OrbitControls';
 import MessageMeshFactory from './MessageMeshFactory';
 import MessageMesh from './MessageMesh';
-import CommitLog from './commit-log';
+import CommitLog from './CommitLog';
 
 class Canvas {
   private w: number;

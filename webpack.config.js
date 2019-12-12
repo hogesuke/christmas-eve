@@ -7,7 +7,7 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"]
   },
-  entry: "./src/main.ts",
+  entry: "./src/Main.ts",
   output: {
     path: `${__dirname}/dist`,
     filename: "bundle.js"
