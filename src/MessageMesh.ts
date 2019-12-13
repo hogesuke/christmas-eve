@@ -1,10 +1,10 @@
-import * as THREE from 'three';
+import { Mesh } from 'three';
 
-export default class CommitLogMesh {
-  private mesh: THREE.Mesh;
+export default class MessageMesh {
+  private mesh: Mesh;
   private initialPosition: { x: number, y: number, z: number };
 
-  constructor (mesh: THREE.Mesh) {
+  constructor (mesh: Mesh) {
     this.mesh = mesh;
   }
 
