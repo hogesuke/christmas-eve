@@ -121,7 +121,7 @@ class Canvas {
 
       messageMesh.setInitialPosition(x, y, z);
 
-      this.scene.add(messageMesh.getRawMesh());
+      this.scene.add(messageMesh);
       this.messageMeshes.push(messageMesh);
     }
 
@@ -165,10 +165,10 @@ class Canvas {
     this.prevTimestamp = currentTimestamp;
 
     this.messageMeshes.forEach(a => {
-      if (a.getRawMesh().position.y < -1000) {
-        a.setPositionY(a.getInitialPosition().y)
+      if (a.position.y < -1000) {
+        a.position.y = a.getOriginalPosition().y
       } else {
-        a.setPositionY(a.getRawMesh().position.y - sec * 100)
+        a.position.y = a.position.y - sec * 100;
       }
     });
 

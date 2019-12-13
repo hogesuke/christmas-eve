@@ -1,27 +1,30 @@
-import { Mesh } from 'three';
+import {
+  Geometry,
+  BufferGeometry,
+  Material,
+  Mesh
+} from 'three';
 
-export default class MessageMesh {
-  private mesh: Mesh;
-  private initialPosition: { x: number, y: number, z: number };
+export default class MessageMesh extends Mesh {
+  private originalPosition: { x: number, y: number, z: number };
 
-  constructor (mesh: Mesh) {
-    this.mesh = mesh;
+  constructor (
+    geometry: Geometry | BufferGeometry,
+    material: Material | Material[]
+  ) {
+    super(geometry, material);
   }
 
-  getInitialPosition () {
-    return this.initialPosition;
-  }
-
-  getRawMesh () {
-    return this.mesh;
+  getOriginalPosition () {
+    return this.originalPosition;
   }
 
   setInitialPosition (x: number, y: number, z: number) {
-    this.mesh.position.set(x, y, z);
-    this.initialPosition = { x, y, z };
+    this.position.set(x, y, z);
+    this.originalPosition = { x, y, z };
   }
 
   setPositionY (y: number) {
-    this.mesh.position.y = y;
+    this.position.y = y;
   }
 }
