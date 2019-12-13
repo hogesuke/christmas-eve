@@ -4,7 +4,7 @@ import {
   SpriteMaterial,
 } from 'three';
 
-export default class Snow extends Sprite {
+export default class SnowSprite extends Sprite {
   private velocity = new SnowVector3(0, -4, 0);
   private gravity = new SnowVector3(0, 0, 0);
   private drag = 1;

@@ -1,7 +1,6 @@
 import {
   MeshBasicMaterial,
   TextGeometry,
-  Mesh,
   Font
 } from 'three';
 import CommitLog from './CommitLog';
@@ -27,6 +26,6 @@ export default class MessageMeshFactory {
       new MeshBasicMaterial({ color: 0x000000 })
     ];
 
-    return new MessageMesh(new Mesh(textGeometry, materials));
+    return new MessageMesh(textGeometry, materials);
   }
 }

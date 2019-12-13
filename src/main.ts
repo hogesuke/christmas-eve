@@ -19,7 +19,7 @@ import { OrbitControls } from './OrbitControls';
 import MessageMeshFactory from './MessageMeshFactory';
 import MessageMesh from './MessageMesh';
 import CommitLog from './CommitLog';
-import Snow from './Snow';
+import SnowSprite from './SnowSprite';
 
 class Canvas {
   private w: number;
@@ -31,7 +31,7 @@ class Canvas {
   private light: PointLight;
   private controls: DeviceOrientationControls | OrbitControls;
   private messageMeshes: MessageMesh[] = [];
-  private snowParticles: Snow[] = [];
+  private snowSprites: SnowSprite[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
 
   constructor (w: number, h: number) {
@@ -121,14 +121,14 @@ class Canvas {
 
       messageMesh.setInitialPosition(x, y, z);
 
-      this.scene.add(messageMesh.getRawMesh());
+      this.scene.add(messageMesh);
       this.messageMeshes.push(messageMesh);
     }
 
     const geometry = new SphereBufferGeometry(1000, 32, 32);
     geometry.scale(-1, 1, 1);
 
-    const material = new MeshBasicMaterial({ map: texture });
+    const material = new MeshBasicMaterial({ map: texture, color: 0x777777 });
 
     const mesh = new Mesh(geometry, material);
 
@@ -142,14 +142,14 @@ class Canvas {
     const spriteMaterial = new SpriteMaterial({ map: particleImage });
 
     for (var i = 0; i < 2000; i++) {
-      const snow = new Snow(spriteMaterial);
-      snow.position.x = Math.random() * 2000 - 1000;
-      snow.position.y = Math.random() * 2000 - 1000;
-      snow.position.z = Math.random() * 2000 - 1000;
-      snow.scale.set(4, 4, 1);
+      const snowSprite = new SnowSprite(spriteMaterial);
+      snowSprite.position.x = Math.random() * 2000 - 1000;
+      snowSprite.position.y = Math.random() * 2000 - 1000;
+      snowSprite.position.z = Math.random() * 2000 - 1000;
+      snowSprite.scale.set(4, 4, 1);
 
-      this.scene.add(snow);
-      this.snowParticles.push(snow);
+      this.scene.add(snowSprite);
+      this.snowSprites.push(snowSprite);
     }
 
     // 描画ループを開始
@@ -165,14 +165,14 @@ class Canvas {
     this.prevTimestamp = currentTimestamp;
 
     this.messageMeshes.forEach(a => {
-      if (a.getRawMesh().position.y < -1000) {
-        a.setPositionY(a.getInitialPosition().y)
+      if (a.position.y < -1000) {
+        a.position.y = a.getOriginalPosition().y
       } else {
-        a.setPositionY(a.getRawMesh().position.y - sec * 100)
+        a.position.y = a.position.y - sec * 100;
       }
     });
 
-    this.snowParticles.forEach((particle) => {
+    this.snowSprites.forEach((particle) => {
       particle.updatePhysics();
 
       const p = particle.position;
