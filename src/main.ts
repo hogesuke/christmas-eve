@@ -3,6 +3,7 @@ import {
   PerspectiveCamera,
   Mesh,
   MeshBasicMaterial,
+  SpriteMaterial,
   Scene,
   PointLight,
   SphereBufferGeometry,
@@ -11,14 +12,14 @@ import {
   FontLoader,
   Font,
   Texture,
-  ImageUtils,
-  UVMapping
+  TextureLoader,
 } from 'three';
 import { DeviceOrientationControls } from './DeviceOrientationControls';
 import { OrbitControls } from './OrbitControls';
 import MessageMeshFactory from './MessageMeshFactory';
 import MessageMesh from './MessageMesh';
 import CommitLog from './CommitLog';
+import Snow from './Snow';
 
 class Canvas {
   private w: number;
@@ -30,6 +31,7 @@ class Canvas {
   private light: PointLight;
   private controls: DeviceOrientationControls | OrbitControls;
   private messageMeshes: MessageMesh[] = [];
+  private snowParticles: Snow[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
 
   constructor (w: number, h: number) {
@@ -97,16 +99,14 @@ class Canvas {
     this.scene.add(this.light);
 
     // フォント
-    const loader = new FontLoader();
-
     const font = await new Promise<Font>(resolve => {
       // loader.load('Sawarabi_Mincho_Regular.json', resolve);
-      loader.load('helvetiker_regular.typeface.json', resolve);
+      new FontLoader().load('helvetiker_regular.typeface.json', resolve);
     });
 
     // テクスチャ
     const texture = await new Promise<Texture>(resolve => {
-      ImageUtils.loadTexture('360_night01_1200-min.jpg', UVMapping, resolve);
+      new TextureLoader().load('360_night01_1200-min.jpg', resolve);
     });
 
     const messageMeshFactory = new MessageMeshFactory(font);
@@ -134,6 +134,24 @@ class Canvas {
 
     this.scene.add(mesh);
 
+    // 雪
+    const particleImage = await new Promise<Texture>(resolve => {
+      new TextureLoader().load('snow2.png', resolve);
+    });
+
+    const spriteMaterial = new SpriteMaterial({ map: particleImage });
+
+    for (var i = 0; i < 2000; i++) {
+      const snow = new Snow(spriteMaterial);
+      snow.position.x = Math.random() * 2000 - 1000;
+      snow.position.y = Math.random() * 2000 - 1000;
+      snow.position.z = Math.random() * 2000 - 1000;
+      snow.scale.set(4, 4, 1);
+
+      this.scene.add(snow);
+      this.snowParticles.push(snow);
+    }
+
     // 描画ループを開始
     this.render();
   }
@@ -151,6 +169,28 @@ class Canvas {
         a.setPositionY(a.getInitialPosition().y)
       } else {
         a.setPositionY(a.getRawMesh().position.y - sec * 100)
+      }
+    });
+
+    this.snowParticles.forEach((particle) => {
+      particle.updatePhysics();
+
+      const p = particle.position;
+
+      if (p.y < -1000) {
+        p.y += 2000;
+      }
+
+      if (p.x > 1000) {
+        p.x -= 2000;
+      } else if (p.x < -1000) {
+        p.x += 2000;
+      }
+
+      if (p.z > 1000) {
+        p.z -= 2000;
+      } else if (p.z < -1000) {
+        p.z += 2000;
       }
     });
 
