@@ -13,18 +13,26 @@ export default class MessageMesh extends Mesh {
     material: Material | Material[]
   ) {
     super(geometry, material);
+
+    this.setRandomOriginalPosition();
   }
 
   getOriginalPosition () {
     return this.originalPosition;
   }
 
-  setInitialPosition (x: number, y: number, z: number) {
-    this.position.set(x, y, z);
-    this.originalPosition = { x, y, z };
-  }
-
   setPositionY (y: number) {
     this.position.y = y;
+  }
+
+  private setRandomOriginalPosition () {
+    const x = Math.floor(Math.random() * 2000) - 1000;
+    const y = Math.floor(Math.random() * 1000);
+    const z = Math.floor(Math.random() * 2000) - 1000;
+    const rotationY = Math.random() * Math.PI;
+
+    this.originalPosition = { x, y, z};
+    this.position.set(x, y, z);
+    this.rotateY(rotationY);
   }
 }

@@ -114,13 +114,6 @@ class Canvas {
     for (let i = 0; i < 30; i++) {
       const commitLog = new CommitLog(`#${i}`);
       const messageMesh = messageMeshFactory.createMesh(commitLog);
-
-      const x = Math.floor(Math.random() * 2000) - 1000;
-      const y = Math.floor(Math.random() * 1000);
-      const z = Math.floor(Math.random() * 2000) - 1000;
-
-      messageMesh.setInitialPosition(x, y, z);
-
       this.scene.add(messageMesh);
       this.messageMeshes.push(messageMesh);
     }
@@ -165,6 +158,8 @@ class Canvas {
     this.prevTimestamp = currentTimestamp;
 
     this.messageMeshes.forEach(a => {
+      a.rotation.y = a.rotation.y + sec * 0.5;
+
       if (a.position.y < -1000) {
         a.position.y = a.getOriginalPosition().y
       } else {
