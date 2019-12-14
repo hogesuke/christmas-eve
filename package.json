@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/hogesuke/christmas-eve#readme",
   "devDependencies": {
+    "@types/chroma-js": "^1.4.3",
     "@typescript-eslint/eslint-plugin": "^2.9.0",
     "@typescript-eslint/parser": "^2.9.0",
     "eslint": "^6.7.2",
@@ -31,6 +32,7 @@
   },
   "dependencies": {
     "@types/three": "^0.103.2",
+    "chroma-js": "^2.1.0",
     "three": "^0.111.0"
   }
 }
