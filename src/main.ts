@@ -158,7 +158,7 @@ class Canvas {
     this.prevTimestamp = currentTimestamp;
 
     this.messageMeshes.forEach(a => {
-      a.rotation.y = a.rotation.y + sec * 0.5;
+      // a.rotation.y = a.rotation.y + sec * 0.5;
 
       if (a.position.y < -1000) {
         a.position.y = a.getOriginalPosition().y
