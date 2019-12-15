@@ -7,7 +7,6 @@ import {
   Scene,
   PointLight,
   SphereBufferGeometry,
-  Vector2,
   Vector3,
   FontLoader,
   Font,
@@ -26,7 +25,6 @@ class Canvas {
   private h: number;
   private commitLoader: CommitLoader;
   private repositoryInput: HTMLInputElement;
-  private mouse: Vector2;
   private renderer: WebGLRenderer;
   private camera: PerspectiveCamera;
   private scene: Scene;
@@ -49,9 +47,6 @@ class Canvas {
   }
 
   async run () {
-    // マウス座標
-    this.mouse = new Vector2(0, 0);
-
     // レンダラーを作成
     this.renderer = new WebGLRenderer({ alpha: true });
     this.renderer.setSize(this.w, this.h); // 描画サイズ
@@ -139,11 +134,6 @@ class Canvas {
 
     for (var i = 0; i < 2000; i++) {
       const snowSprite = new SnowSprite(spriteMaterial);
-      snowSprite.position.x = Math.random() * 2000 - 1000;
-      snowSprite.position.y = Math.random() * 2000 - 1000;
-      snowSprite.position.z = Math.random() * 2000 - 1000;
-      snowSprite.scale.set(4, 4, 1);
-
       this.scene.add(snowSprite);
       this.snowSprites.push(snowSprite);
     }
@@ -214,14 +204,6 @@ class Canvas {
     if (e.keyCode !== 13) { return; }
 
     this.refreshCommitMeshes(this.repositoryInput.value)
-  }
-
-  mouseMoved (x, y) {
-    this.mouse.x = x - (this.w / 2); // 原点を中心に持ってくる
-    this.mouse.y = -y + (this.h / 2); // 軸を反転して原点を中心に持ってくる
-
-    this.light.position.x = this.mouse.x;
-    this.light.position.y = this.mouse.y;
   }
 }
 
