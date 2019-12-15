@@ -8,6 +8,7 @@ import {
   PointLight,
   SphereBufferGeometry,
   Vector3,
+  LoadingManager,
   FontLoader,
   Font,
   Texture,
@@ -23,7 +24,11 @@ import SnowSprite from './SnowSprite';
 class Canvas {
   private w: number;
   private h: number;
+  private loadingManager: LoadingManager;
   private commitLoader: CommitLoader;
+  private font: Font;
+  private backgroundTexture: Texture;
+  private snowImage: Texture;
   private repositoryInput: HTMLInputElement;
   private renderer: WebGLRenderer;
   private camera: PerspectiveCamera;
@@ -40,20 +45,67 @@ class Canvas {
     this.w = w;
     this.h = h;
 
+    this.loadingManager = new LoadingManager();
     this.commitLoader = new CommitLoader('http://localhost:1234/api');
 
     this.repositoryInput = document.querySelector<HTMLInputElement>('.repository-input');
     this.repositoryInput.addEventListener('keypress',this.onPressEnter.bind(this));
   }
 
-  async run () {
+  async loadAssets () {
+    const promise = new Promise((resolve, reject) => {
+      this.loadingManager.onLoad = () => {
+        resolve();
+        console.log('Loading complete!');
+      };
+
+      this.loadingManager.onError = (url) => {
+        reject();
+        console.log('There was an error loading ' + url);
+      };
+    });
+
+    this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
+      console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+    };
+
+    this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+    };
+
+    // 背景
+    new Promise<Texture>(resolve => {
+      new TextureLoader(this.loadingManager).load('360_night01_1200-min.jpg', resolve);
+    }).then(texture => {
+      this.backgroundTexture = texture;
+    });
+
+    // 雪
+    new Promise<Texture>(resolve => {
+      new TextureLoader(this.loadingManager).load('snow2.png', resolve);
+    }).then(texture => {
+      this.snowImage = texture;
+    });
+
+    // フォント
+    new Promise<Font>(resolve => {
+      // loader.load('Sawarabi_Mincho_Regular.json', resolve);
+      new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', resolve);
+    }).then(font => {
+      this.font = font;
+    });
+
+    return promise;
+  }
+
+  init () {
     // レンダラーを作成
     this.renderer = new WebGLRenderer({ alpha: true });
     this.renderer.setSize(this.w, this.h); // 描画サイズ
     // this.renderer.setClearColor(0x000000, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    // #canvas-containerにレンダラーのcanvasを追加
+    // canvasを追加
     const container = document.getElementById("canvas-container");
     container.appendChild(this.renderer.domElement);
 
@@ -98,48 +150,30 @@ class Canvas {
     this.light = new PointLight(0xffffff);
     this.light.position.set(0, 0, 0); // ライトの位置を設定
 
-    // ライトをシーンに追加
     this.scene.add(this.light);
 
-    // フォント
-    const font = await new Promise<Font>(resolve => {
-      // loader.load('Sawarabi_Mincho_Regular.json', resolve);
-      new FontLoader().load('helvetiker_regular.typeface.json', resolve);
-    });
-
-    // テクスチャ
-    const texture = await new Promise<Texture>(resolve => {
-      new TextureLoader().load('360_night01_1200-min.jpg', resolve);
-    });
-
-    this.messageMeshFactory = new MessageMeshFactory(font);
+    // メッセージ
+    this.messageMeshFactory = new MessageMeshFactory(this.font);
 
     this.refreshCommitMeshes('hogesuke/gited');
 
+    // 背景
     const geometry = new SphereBufferGeometry(1000, 32, 32);
     geometry.scale(-1, 1, 1);
 
-    const material = new MeshBasicMaterial({ map: texture, color: 0x777777 });
-
+    const material = new MeshBasicMaterial({ map: this.backgroundTexture, color: 0x777777 });
     const mesh = new Mesh(geometry, material);
 
     this.scene.add(mesh);
 
     // 雪
-    const particleImage = await new Promise<Texture>(resolve => {
-      new TextureLoader().load('snow2.png', resolve);
-    });
-
-    const spriteMaterial = new SpriteMaterial({ map: particleImage });
+    const spriteMaterial = new SpriteMaterial({ map: this.snowImage });
 
     for (var i = 0; i < 2000; i++) {
       const snowSprite = new SnowSprite(spriteMaterial);
       this.scene.add(snowSprite);
       this.snowSprites.push(snowSprite);
     }
-
-    // 描画ループを開始
-    this.render();
   }
 
   render () {
@@ -208,4 +242,9 @@ class Canvas {
 }
 
 const canvas = new Canvas(window.innerWidth, window.innerHeight);
-canvas.run();
+
+(async () => {
+  await canvas.loadAssets();
+  canvas.init();
+  canvas.render();
+})()
