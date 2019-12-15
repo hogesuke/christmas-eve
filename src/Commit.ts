@@ -1,4 +1,4 @@
-export default class CommitLog {
+export default class Commit {
   private message: string;
 
   constructor (message: string) {

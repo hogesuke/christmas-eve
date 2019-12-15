@@ -21,14 +21,17 @@ module.exports = {
     ]
   },
   devtool: isProduction ? false : 'inline-cheap-source-map',
-  optimization: {
-    minimize: true
-  },
   devServer: {
     open: true,
     // openPage: "index.html",
     contentBase: path.join(__dirname, 'dist'),
     watchContentBase: true,
-    port: 1234
+    port: 1234,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        pathRewrite: {'^/api' : ''}
+      }
+    }
   }
 };

@@ -18,7 +18,7 @@ import { DeviceOrientationControls } from './DeviceOrientationControls';
 import { OrbitControls } from './OrbitControls';
 import MessageMeshFactory from './MessageMeshFactory';
 import MessageMesh from './MessageMesh';
-import CommitLog from './CommitLog';
+import CommitLoader from './CommitLoader';
 import SnowSprite from './SnowSprite';
 
 class Canvas {
@@ -92,7 +92,7 @@ class Canvas {
     }
 
     // ライトを作成
-    this.light = new PointLight(0x00ffff);
+    this.light = new PointLight(0xffffff);
     this.light.position.set(0, 0, 400); // ライトの位置を設定
 
     // ライトをシーンに追加
@@ -110,13 +110,15 @@ class Canvas {
     });
 
     const messageMeshFactory = new MessageMeshFactory(font);
+    const commitLoader = new CommitLoader('http://localhost:1234/api');
 
-    for (let i = 0; i < 30; i++) {
-      const commitLog = new CommitLog(`#${i}`);
-      const messageMesh = messageMeshFactory.createMesh(commitLog);
+    const commits = await commitLoader.load('hogesuke/gited');
+
+    commits.forEach(commit => {
+      const messageMesh = messageMeshFactory.createMesh(commit);
       this.scene.add(messageMesh);
       this.messageMeshes.push(messageMesh);
-    }
+    });
 
     const geometry = new SphereBufferGeometry(1000, 32, 32);
     geometry.scale(-1, 1, 1);
