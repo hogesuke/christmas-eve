@@ -24,12 +24,15 @@ import SnowSprite from './SnowSprite';
 class Canvas {
   private w: number;
   private h: number;
+  private commitLoader: CommitLoader;
+  private repositoryInput: HTMLInputElement;
   private mouse: Vector2;
   private renderer: WebGLRenderer;
   private camera: PerspectiveCamera;
   private scene: Scene;
   private light: PointLight;
   private controls: DeviceOrientationControls | OrbitControls;
+  private messageMeshFactory: MessageMeshFactory;
   private messageMeshes: MessageMesh[] = [];
   private snowSprites: SnowSprite[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
@@ -38,6 +41,11 @@ class Canvas {
     // ウィンドウサイズ
     this.w = w;
     this.h = h;
+
+    this.commitLoader = new CommitLoader('http://localhost:1234/api');
+
+    this.repositoryInput = document.querySelector<HTMLInputElement>('.repository-input');
+    this.repositoryInput.addEventListener('keypress',this.onPressEnter.bind(this));
   }
 
   async run () {
@@ -93,7 +101,7 @@ class Canvas {
 
     // ライトを作成
     this.light = new PointLight(0xffffff);
-    this.light.position.set(0, 0, 400); // ライトの位置を設定
+    this.light.position.set(0, 0, 0); // ライトの位置を設定
 
     // ライトをシーンに追加
     this.scene.add(this.light);
@@ -109,16 +117,9 @@ class Canvas {
       new TextureLoader().load('360_night01_1200-min.jpg', resolve);
     });
 
-    const messageMeshFactory = new MessageMeshFactory(font);
-    const commitLoader = new CommitLoader('http://localhost:1234/api');
+    this.messageMeshFactory = new MessageMeshFactory(font);
 
-    const commits = await commitLoader.load('hogesuke/gited');
-
-    commits.forEach(commit => {
-      const messageMesh = messageMeshFactory.createMesh(commit);
-      this.scene.add(messageMesh);
-      this.messageMeshes.push(messageMesh);
-    });
+    this.refreshCommitMeshes('hogesuke/gited');
 
     const geometry = new SphereBufferGeometry(1000, 32, 32);
     geometry.scale(-1, 1, 1);
@@ -194,6 +195,25 @@ class Canvas {
     this.controls.update();
 
     this.renderer.render(this.scene, this.camera);
+  }
+
+  async refreshCommitMeshes (repository: string) {
+    const commits = await this.commitLoader.load(repository);
+
+    this.messageMeshes.forEach(a => this.scene.remove(a));
+    this.messageMeshes = [];
+
+    commits.forEach(commit => {
+      const messageMesh = this.messageMeshFactory.createMesh(commit);
+      this.scene.add(messageMesh);
+      this.messageMeshes.push(messageMesh);
+    });
+  }
+
+  onPressEnter (e: KeyboardEvent) {
+    if (e.keyCode !== 13) { return; }
+
+    this.refreshCommitMeshes(this.repositoryInput.value)
   }
 
   mouseMoved (x, y) {

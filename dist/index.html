@@ -5,10 +5,29 @@
         body {
             margin: 0;
         }
+
+        #footer {
+            position: absolute;
+            bottom: 0;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        #footer .target-input{
+            padding: 5px;
+            background-color: transparent;
+            color: #fff;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
+    <div id="footer">
+        <input type="text" class="repository-input">
+    </div>
     <script src="bundle.js"></script>
 </body>
 </html>
