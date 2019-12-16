@@ -39,6 +39,7 @@ class Canvas {
   private messageMeshes: MessageMesh[] = [];
   private snowSprites: SnowSprite[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
+  private readonly DEFAULT_REPO = 'hogesuke/gited';
 
   constructor (w: number, h: number) {
     // ウィンドウサイズ
@@ -50,6 +51,7 @@ class Canvas {
 
     this.repositoryInput = document.querySelector<HTMLInputElement>('.repository-input');
     this.repositoryInput.addEventListener('keypress',this.onPressEnter.bind(this));
+    this.repositoryInput.value = this.DEFAULT_REPO;
   }
 
   async loadAssets () {
@@ -155,7 +157,7 @@ class Canvas {
     // メッセージ
     this.messageMeshFactory = new MessageMeshFactory(this.font);
 
-    this.refreshCommitMeshes('hogesuke/gited');
+    this.refreshCommitMeshes(this.DEFAULT_REPO);
 
     // 背景
     const geometry = new SphereBufferGeometry(1000, 32, 32);

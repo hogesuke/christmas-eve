@@ -3,32 +3,47 @@
 <head>
     <style>
         body {
+            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
             margin: 0;
         }
 
-        #footer {
+        header {
             position: absolute;
-            bottom: 0;
+            top: 0;
+            display: flex;
+            justify-content: flex-end;
             padding: 20px;
             width: 100%;
             box-sizing: border-box;
-        }
-
-        #footer .repository-input{
-            padding: 6px 10px;
-            width: 400px;
-            border: solid 3px #ccc;
-            background-color: rgba(255, 255, 255, 0.15);
             color: #ccc;
             font-size: 30px;
+        }
+
+        header .message {
+            letter-spacing: 0.1em;
+        }
+
+        header .repository-input{
+            padding: 10px 0;
+            width: 400px;
+            border: none;
+            border-bottom: solid 3px #ccc;
+            background-color: transparent;
+            color: #ccc;
+            font-size: 30px;
+            outline: none;
+        }
+
+        header .repository-input:focus {
+            border-bottom-color: rgb(245, 60, 60);
         }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
-    <div id="footer">
-        <input type="text" class="repository-input">
-    </div>
+    <header>
+        <input type="text" class="repository-input" spellcheck="false">
+    </header>
     <script src="bundle.js"></script>
 </body>
 </html>
