@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         body {
             font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
             margin: 0;
+            overflow: hidden;
         }
 
         header {
@@ -12,7 +14,7 @@
             top: 0;
             display: flex;
             justify-content: flex-end;
-            padding: 20px;
+            padding: 20px 0;
             width: 100%;
             box-sizing: border-box;
             color: #ccc;
@@ -28,6 +30,7 @@
             width: 400px;
             border: none;
             border-bottom: solid 3px #ccc;
+            border-radius: 0;
             background-color: transparent;
             color: #ccc;
             font-size: 30px;
@@ -35,7 +38,7 @@
         }
 
         header .repository-input:focus {
-            border-bottom-color: rgb(245, 60, 60);
+            border-bottom-color: #227def;
         }
     </style>
 </head>

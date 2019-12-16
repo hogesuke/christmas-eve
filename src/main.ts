@@ -76,26 +76,13 @@ class Canvas {
     };
 
     // 背景
-    new Promise<Texture>(resolve => {
-      new TextureLoader(this.loadingManager).load('360_night01_1200-min.jpg', resolve);
-    }).then(texture => {
-      this.backgroundTexture = texture;
-    });
+    new TextureLoader(this.loadingManager).load('360_night01_1200-min.jpg', texture => this.backgroundTexture = texture);
 
     // 雪
-    new Promise<Texture>(resolve => {
-      new TextureLoader(this.loadingManager).load('snow2.png', resolve);
-    }).then(texture => {
-      this.snowImage = texture;
-    });
+    new TextureLoader(this.loadingManager).load('snow2.png', texture => this.snowImage = texture);
 
     // フォント
-    new Promise<Font>(resolve => {
-      // loader.load('Sawarabi_Mincho_Regular.json', resolve);
-      new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', resolve);
-    }).then(font => {
-      this.font = font;
-    });
+    new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', font => this.font = font);
 
     return promise;
   }
@@ -103,29 +90,23 @@ class Canvas {
   init () {
     // レンダラーを作成
     this.renderer = new WebGLRenderer({ alpha: true });
-    this.renderer.setSize(this.w, this.h); // 描画サイズ
     // this.renderer.setClearColor(0x000000, 1);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
 
     // canvasを追加
     const container = document.getElementById("canvas-container");
     container.appendChild(this.renderer.domElement);
 
-    // 視野角をラジアンに変換
-    const fov    = 60;
-    const fovRad = (fov / 2) * (Math.PI / 180);
-
-    // 途中式
-    // Math.tan(favRad)        = (height / 2) / dist;
-    // Math.tan(favRad) * dist = (height / 2);
-    const dist = (this.h / 2) / Math.tan(fovRad);
-
     // シーンを作成
     this.scene = new Scene();
 
-    // カメラを作成（視野角、画面のアスペクト比、カメラに映る最短距離、カメラに映る再遠距離）
-    this.camera = new PerspectiveCamera(fov, this.w / this.h, 1, dist * 2);
+    // カメラを作成
+    this.camera = new PerspectiveCamera();
+    this.camera.fov = 60; // 視野角
+    this.camera.near = 1; // カメラに映る最短距離
+    this.camera.far = 2100; // カメラに映る再遠距離
     this.camera.lookAt(new Vector3( 0, 0, 0 ));
+
+    this.onResize();
 
     // Controls
     const isAndroid = /Android/.test(navigator.userAgent);
@@ -160,7 +141,7 @@ class Canvas {
     this.refreshCommitMeshes(this.DEFAULT_REPO);
 
     // 背景
-    const geometry = new SphereBufferGeometry(1000, 32, 32);
+    const geometry = new SphereBufferGeometry(2000, 32, 32);
     geometry.scale(-1, 1, 1);
 
     const material = new MeshBasicMaterial({ map: this.backgroundTexture, color: 0x777777 });
@@ -176,6 +157,9 @@ class Canvas {
       this.scene.add(snowSprite);
       this.snowSprites.push(snowSprite);
     }
+
+    // イベント
+    window.addEventListener('resize', this.onResize.bind(this));
   }
 
   render () {
@@ -240,6 +224,16 @@ class Canvas {
     if (e.keyCode !== 13) { return; }
 
     this.refreshCommitMeshes(this.repositoryInput.value)
+  }
+
+  onResize () {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(width, height);
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
   }
 }
 
