@@ -215,9 +215,9 @@ class Canvas {
 
     commits.forEach(commit => {
       const messageMesh = this.messageMeshFactory.createMesh(commit);
-      this.scene.add(messageMesh);
       this.messageMeshes.push(messageMesh);
     });
+    this.scene.add(...this.messageMeshes);
   }
 
   onPressEnter (e: KeyboardEvent) {
@@ -241,6 +241,10 @@ const canvas = new Canvas(window.innerWidth, window.innerHeight);
 
 (async () => {
   await canvas.loadAssets();
+
   canvas.init();
   canvas.render();
+
+  const mainElement = document.getElementById('main');
+  mainElement.classList.add('hide');
 })()
