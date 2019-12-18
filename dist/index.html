@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:100&display=block" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%;
+        }
+
+        html {
+            font-size: 62.5%;
+        }
+
         body {
-            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
+            font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
             margin: 0;
             overflow: hidden;
+        }
+
+        canvas {
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
         }
 
         header {
@@ -14,31 +32,86 @@
             top: 0;
             display: flex;
             justify-content: flex-end;
-            padding: 20px 0;
+            padding: 2.0rem 0;
             width: 100%;
             box-sizing: border-box;
-            color: #ccc;
-            font-size: 30px;
-        }
-
-        header .message {
-            letter-spacing: 0.1em;
         }
 
         header .repository-input{
-            padding: 10px 0;
-            width: 400px;
+            padding: 1rem 0;
+            width: 40rem;
             border: none;
-            border-bottom: solid 3px #ccc;
+            border-bottom: solid 1px #ddd;
             border-radius: 0;
             background-color: transparent;
-            color: #ccc;
-            font-size: 30px;
+            color: #ddd;
+            font-family : inherit;
+            font-size: 2.8rem;
             outline: none;
         }
 
         header .repository-input:focus {
             border-bottom-color: #227def;
+        }
+
+        #main {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            padding: 5.0rem;
+            background-color: #000;
+            opacity: 1;
+            transition: opacity 6s ease 1s;
+            pointer-events: none;
+        }
+
+        #main.hide {
+            opacity: 0;
+        }
+
+        #main > h1 {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 10rem;
+            color: #ddd;
+        }
+
+        #main > h1 > span {
+            display: block;
+            padding: 1rem 0;
+        }
+
+        /* 〜479px：SP縦
+        ------------------------------ */
+        @media screen and (max-width: 479px) {
+            html {
+                font-size: 25%;
+            }
+
+            header .repository-input{
+                width: 85%;
+                padding: 0.6rem 0;
+                font-size: 5rem;
+            }
+        }
+
+        /* 480px〜599px：SP横
+        ------------------------------ */
+        @media screen and (min-width:480px) and (max-width:599px) {
+            html {
+                font-size: 40%;
+            }
+        }
+
+        /* 600px〜959px：タブレット
+        ------------------------------ */
+        @media screen and (min-width:600px) and (max-width:959px) {
+            html {
+                font-size: 60%;
+            }
         }
     </style>
 </head>
@@ -47,6 +120,14 @@
     <header>
         <input type="text" class="repository-input" spellcheck="false">
     </header>
+    <section id="main">
+        <h1>
+            <span>雨は</span>
+            <span>夜更け過ぎに</span>
+            <span>コミットログへ</span>
+            <span>変わる</span>
+        </h1>
+    </section>
     <script src="bundle.js"></script>
 </body>
 </html>
