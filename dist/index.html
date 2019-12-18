@@ -1,14 +1,52 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         body {
+            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
             margin: 0;
+            overflow: hidden;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 0;
+            width: 100%;
+            box-sizing: border-box;
+            color: #ccc;
+            font-size: 30px;
+        }
+
+        header .message {
+            letter-spacing: 0.1em;
+        }
+
+        header .repository-input{
+            padding: 10px 0;
+            width: 400px;
+            border: none;
+            border-bottom: solid 3px #ccc;
+            border-radius: 0;
+            background-color: transparent;
+            color: #ccc;
+            font-size: 30px;
+            outline: none;
+        }
+
+        header .repository-input:focus {
+            border-bottom-color: #227def;
         }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
+    <header>
+        <input type="text" class="repository-input" spellcheck="false">
+    </header>
     <script src="bundle.js"></script>
 </body>
 </html>

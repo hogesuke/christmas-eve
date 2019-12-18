@@ -14,6 +14,10 @@ export default class SnowSprite extends Sprite {
 
     this.velocity.rotateX(this.randomRange(-20, 20));
     this.velocity.rotateY(this.randomRange(0, 360));
+
+    this.scale.set(4, 4, 1);
+
+    this.setRandomOriginalPosition();
   }
 
   updatePhysics () {
@@ -24,6 +28,12 @@ export default class SnowSprite extends Sprite {
 
   private randomRange (min: number, max: number) {
     return ((Math.random() * (max - min)) + min);
+  }
+
+  private setRandomOriginalPosition () {
+    this.position.x = Math.random() * 2000 - 1000;
+    this.position.y = Math.random() * 2000 - 1000;
+    this.position.z = Math.random() * 2000 - 1000;
   }
 }
 

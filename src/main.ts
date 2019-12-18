@@ -7,8 +7,8 @@ import {
   Scene,
   PointLight,
   SphereBufferGeometry,
-  Vector2,
   Vector3,
+  LoadingManager,
   FontLoader,
   Font,
   Texture,
@@ -18,57 +18,95 @@ import { DeviceOrientationControls } from './DeviceOrientationControls';
 import { OrbitControls } from './OrbitControls';
 import MessageMeshFactory from './MessageMeshFactory';
 import MessageMesh from './MessageMesh';
-import CommitLog from './CommitLog';
+import CommitLoader from './CommitLoader';
 import SnowSprite from './SnowSprite';
 
 class Canvas {
   private w: number;
   private h: number;
-  private mouse: Vector2;
+  private loadingManager: LoadingManager;
+  private commitLoader: CommitLoader;
+  private font: Font;
+  private backgroundTexture: Texture;
+  private snowImage: Texture;
+  private repositoryInput: HTMLInputElement;
   private renderer: WebGLRenderer;
   private camera: PerspectiveCamera;
   private scene: Scene;
   private light: PointLight;
   private controls: DeviceOrientationControls | OrbitControls;
+  private messageMeshFactory: MessageMeshFactory;
   private messageMeshes: MessageMesh[] = [];
   private snowSprites: SnowSprite[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
+  private readonly DEFAULT_REPO = 'hogesuke/gited';
 
   constructor (w: number, h: number) {
     // ウィンドウサイズ
     this.w = w;
     this.h = h;
+
+    this.loadingManager = new LoadingManager();
+    this.commitLoader = new CommitLoader('http://localhost:1234/api');
+
+    this.repositoryInput = document.querySelector<HTMLInputElement>('.repository-input');
+    this.repositoryInput.addEventListener('keypress',this.onPressEnter.bind(this));
+    this.repositoryInput.value = this.DEFAULT_REPO;
   }
 
-  async run () {
-    // マウス座標
-    this.mouse = new Vector2(0, 0);
+  async loadAssets () {
+    const promise = new Promise((resolve, reject) => {
+      this.loadingManager.onLoad = () => {
+        resolve();
+        console.log('Loading complete!');
+      };
 
+      this.loadingManager.onError = (url) => {
+        reject();
+        console.log('There was an error loading ' + url);
+      };
+    });
+
+    this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
+      console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+    };
+
+    this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+    };
+
+    // 背景
+    new TextureLoader(this.loadingManager).load('360_night01_1200-min.jpg', texture => this.backgroundTexture = texture);
+
+    // 雪
+    new TextureLoader(this.loadingManager).load('snow2.png', texture => this.snowImage = texture);
+
+    // フォント
+    new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', font => this.font = font);
+
+    return promise;
+  }
+
+  init () {
     // レンダラーを作成
     this.renderer = new WebGLRenderer({ alpha: true });
-    this.renderer.setSize(this.w, this.h); // 描画サイズ
     // this.renderer.setClearColor(0x000000, 1);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    // #canvas-containerにレンダラーのcanvasを追加
+    // canvasを追加
     const container = document.getElementById("canvas-container");
     container.appendChild(this.renderer.domElement);
-
-    // 視野角をラジアンに変換
-    const fov    = 60;
-    const fovRad = (fov / 2) * (Math.PI / 180);
-
-    // 途中式
-    // Math.tan(favRad)        = (height / 2) / dist;
-    // Math.tan(favRad) * dist = (height / 2);
-    const dist = (this.h / 2) / Math.tan(fovRad);
 
     // シーンを作成
     this.scene = new Scene();
 
-    // カメラを作成（視野角、画面のアスペクト比、カメラに映る最短距離、カメラに映る再遠距離）
-    this.camera = new PerspectiveCamera(fov, this.w / this.h, 1, dist * 2);
+    // カメラを作成
+    this.camera = new PerspectiveCamera();
+    this.camera.fov = 60; // 視野角
+    this.camera.near = 1; // カメラに映る最短距離
+    this.camera.far = 2100; // カメラに映る再遠距離
     this.camera.lookAt(new Vector3( 0, 0, 0 ));
+
+    this.onResize();
 
     // Controls
     const isAndroid = /Android/.test(navigator.userAgent);
@@ -92,61 +130,36 @@ class Canvas {
     }
 
     // ライトを作成
-    this.light = new PointLight(0x00ffff);
-    this.light.position.set(0, 0, 400); // ライトの位置を設定
+    this.light = new PointLight(0xffffff);
+    this.light.position.set(0, 0, 0); // ライトの位置を設定
 
-    // ライトをシーンに追加
     this.scene.add(this.light);
 
-    // フォント
-    const font = await new Promise<Font>(resolve => {
-      // loader.load('Sawarabi_Mincho_Regular.json', resolve);
-      new FontLoader().load('helvetiker_regular.typeface.json', resolve);
-    });
+    // メッセージ
+    this.messageMeshFactory = new MessageMeshFactory(this.font);
 
-    // テクスチャ
-    const texture = await new Promise<Texture>(resolve => {
-      new TextureLoader().load('360_night01_1200-min.jpg', resolve);
-    });
+    this.refreshCommitMeshes(this.DEFAULT_REPO);
 
-    const messageMeshFactory = new MessageMeshFactory(font);
-
-    for (let i = 0; i < 30; i++) {
-      const commitLog = new CommitLog(`#${i}`);
-      const messageMesh = messageMeshFactory.createMesh(commitLog);
-      this.scene.add(messageMesh);
-      this.messageMeshes.push(messageMesh);
-    }
-
-    const geometry = new SphereBufferGeometry(1000, 32, 32);
+    // 背景
+    const geometry = new SphereBufferGeometry(2000, 32, 32);
     geometry.scale(-1, 1, 1);
 
-    const material = new MeshBasicMaterial({ map: texture, color: 0x777777 });
-
+    const material = new MeshBasicMaterial({ map: this.backgroundTexture, color: 0x777777 });
     const mesh = new Mesh(geometry, material);
 
     this.scene.add(mesh);
 
     // 雪
-    const particleImage = await new Promise<Texture>(resolve => {
-      new TextureLoader().load('snow2.png', resolve);
-    });
-
-    const spriteMaterial = new SpriteMaterial({ map: particleImage });
+    const spriteMaterial = new SpriteMaterial({ map: this.snowImage });
 
     for (var i = 0; i < 2000; i++) {
       const snowSprite = new SnowSprite(spriteMaterial);
-      snowSprite.position.x = Math.random() * 2000 - 1000;
-      snowSprite.position.y = Math.random() * 2000 - 1000;
-      snowSprite.position.z = Math.random() * 2000 - 1000;
-      snowSprite.scale.set(4, 4, 1);
-
       this.scene.add(snowSprite);
       this.snowSprites.push(snowSprite);
     }
 
-    // 描画ループを開始
-    this.render();
+    // イベント
+    window.addEventListener('resize', this.onResize.bind(this));
   }
 
   render () {
@@ -194,14 +207,40 @@ class Canvas {
     this.renderer.render(this.scene, this.camera);
   }
 
-  mouseMoved (x, y) {
-    this.mouse.x = x - (this.w / 2); // 原点を中心に持ってくる
-    this.mouse.y = -y + (this.h / 2); // 軸を反転して原点を中心に持ってくる
+  async refreshCommitMeshes (repository: string) {
+    const commits = await this.commitLoader.load(repository);
 
-    this.light.position.x = this.mouse.x;
-    this.light.position.y = this.mouse.y;
+    this.messageMeshes.forEach(a => this.scene.remove(a));
+    this.messageMeshes = [];
+
+    commits.forEach(commit => {
+      const messageMesh = this.messageMeshFactory.createMesh(commit);
+      this.scene.add(messageMesh);
+      this.messageMeshes.push(messageMesh);
+    });
+  }
+
+  onPressEnter (e: KeyboardEvent) {
+    if (e.keyCode !== 13) { return; }
+
+    this.refreshCommitMeshes(this.repositoryInput.value)
+  }
+
+  onResize () {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(width, height);
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
   }
 }
 
 const canvas = new Canvas(window.innerWidth, window.innerHeight);
-canvas.run();
+
+(async () => {
+  await canvas.loadAssets();
+  canvas.init();
+  canvas.render();
+})()
