@@ -47,7 +47,7 @@ class Canvas {
     this.h = h;
 
     this.loadingManager = new LoadingManager();
-    this.commitLoader = new CommitLoader('http://localhost:1234/api');
+    this.commitLoader = new CommitLoader(process.env.API_ROOT);
 
     this.repositoryInput = document.querySelector<HTMLInputElement>('.repository-input');
     this.repositoryInput.addEventListener('keypress',this.onPressEnter.bind(this));
