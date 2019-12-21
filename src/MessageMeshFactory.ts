@@ -1,7 +1,9 @@
 import {
   MeshPhongMaterial,
+  TextGeometry,
+  TextBufferGeometry,
   Font,
-  TextBufferGeometry
+  BufferGeometry
 } from 'three';
 import * as chroma from 'chroma-js';
 import CommitLog from './Commit';
@@ -15,12 +17,15 @@ export default class MessageMeshFactory {
   }
 
   createMesh (commitLog: CommitLog) {
-    const textGeometry = new TextBufferGeometry(commitLog.getMessage(), {
+    const textGeometry = new TextGeometry(commitLog.getMessage(), {
+    // const textGeometry = new TextBufferGeometry(commitLog.getMessage(), {
       font: this.font,
       size: 20,
       height: 2,
       curveSegments: 10 // 曲線に使用する点の数
     });
+
+    const a = new BufferGeometry().fromGeometry(textGeometry as any)
 
     const color = chroma.random().saturate(Math.floor(Math.random() * 3) + 1);
 
@@ -29,6 +34,6 @@ export default class MessageMeshFactory {
       new MeshPhongMaterial({ color: color.num() })
     ];
 
-    return new MessageMesh(textGeometry, materials);
+    return new MessageMesh(a, materials);
   }
 }

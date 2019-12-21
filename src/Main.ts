@@ -10,6 +10,8 @@ import {
   Vector3,
   LoadingManager,
   FontLoader,
+  FileLoader,
+  ObjectLoader,
   Font,
   Texture,
   TextureLoader,
@@ -27,6 +29,7 @@ class Canvas {
   private loadingManager: LoadingManager;
   private commitLoader: CommitLoader;
   private font: Font;
+  private fontJSON: string;
   private backgroundTexture: Texture;
   private snowImage: Texture;
   private repositoryInput: HTMLInputElement;
@@ -83,6 +86,7 @@ class Canvas {
 
     // フォント
     new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', font => this.font = font);
+    new FileLoader(this.loadingManager).load('helvetiker_regular.typeface.json', json => this.fontJSON = json as string);
 
     return promise;
   }
@@ -136,7 +140,7 @@ class Canvas {
     this.scene.add(this.light);
 
     // メッセージ
-    this.messageMeshFactory = new MessageMeshFactory(this.font);
+    // this.messageMeshFactory = new MessageMeshFactory(this.font);
 
     this.refreshCommitMeshes(this.DEFAULT_REPO);
 
@@ -213,11 +217,47 @@ class Canvas {
     this.messageMeshes.forEach(a => this.scene.remove(a));
     this.messageMeshes = [];
 
-    commits.forEach(commit => {
-      const messageMesh = this.messageMeshFactory.createMesh(commit);
-      this.messageMeshes.push(messageMesh);
+    const worker = new Worker('./Hoge.ts', { type: 'module' });
+    worker.addEventListener('message', event => {
+
+      const messageMeshes = JSON.parse(event.data.messageMeshes);
+
+      const loader = new ObjectLoader();
+
+      const meshes = messageMeshes.map(a => {
+        console.log(a);
+        return loader.parse(a);
+      })
+
+      this.messageMeshes.push(...meshes);
+      this.scene.add(...this.messageMeshes);
     });
-    this.scene.add(...this.messageMeshes);
+
+    worker.postMessage({
+      fontJSON: this.fontJSON,
+      commits
+    });
+
+    // commits.forEach(commit => {
+    //   const messageMesh = this.messageMeshFactory.createMesh(commit);
+    //   this.messageMeshes.push(messageMesh);
+    // });
+  }
+
+  replacer (k, v) {
+    if (typeof v === 'function') {
+      return v.toString()
+    }
+
+    return v;
+  }
+
+  reviver (k, v) {
+    if (typeof v === 'string' && v.match(/^function/)) {
+      return Function.call(this, 'return ' + v)();
+    }
+
+    return v;
   }
 
   onPressEnter (e: KeyboardEvent) {

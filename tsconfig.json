@@ -6,7 +6,8 @@
       "moduleResolution": "node",
       "lib": [
         "es2019",
-        "dom"
+        "dom",
+        "webworker"
       ]
     }
   }
