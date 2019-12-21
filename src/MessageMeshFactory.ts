@@ -1,7 +1,7 @@
 import {
   MeshPhongMaterial,
-  TextGeometry,
-  Font
+  Font,
+  TextBufferGeometry
 } from 'three';
 import * as chroma from 'chroma-js';
 import CommitLog from './Commit';
@@ -15,7 +15,7 @@ export default class MessageMeshFactory {
   }
 
   createMesh (commitLog: CommitLog) {
-    const textGeometry = new TextGeometry(commitLog.getMessage(), {
+    const textGeometry = new TextBufferGeometry(commitLog.getMessage(), {
       font: this.font,
       size: 20,
       height: 2,
