@@ -37,7 +37,7 @@
             box-sizing: border-box;
         }
 
-        header .repository-input{
+        header .repository-input {
             padding: 1rem 0;
             width: 40rem;
             border: none;
@@ -48,6 +48,11 @@
             font-family : inherit;
             font-size: 2.8rem;
             outline: none;
+            -webkit-appearance: searchfield;
+        }
+
+        header .repository-input::-webkit-search-cancel-button {
+            margin-right: 10px;
         }
 
         header .repository-input:focus {
@@ -118,7 +123,7 @@
 <body>
     <div id="canvas-container"></div>
     <header>
-        <input type="text" class="repository-input" spellcheck="false">
+        <input type="search" class="repository-input" spellcheck="false">
     </header>
     <section id="main">
         <h1>
