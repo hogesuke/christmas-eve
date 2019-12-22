@@ -27,6 +27,7 @@ class Canvas {
   private loadingManager: LoadingManager;
   private commitLoader: CommitLoader;
   private font: Font;
+  private japaneseFont: Font;
   private backgroundTexture: Texture;
   private snowImage: Texture;
   private repositoryInput: HTMLInputElement;
@@ -84,6 +85,9 @@ class Canvas {
     // フォント
     new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', font => this.font = font);
 
+    // 日本語フォント
+    new FontLoader().load('Mplus_1p_Regular.json', font => this.japaneseFont = font);
+
     return promise;
   }
 
@@ -134,9 +138,6 @@ class Canvas {
     this.light.position.set(0, 0, 0); // ライトの位置を設定
 
     this.scene.add(this.light);
-
-    // メッセージ
-    this.messageMeshFactory = new MessageMeshFactory(this.font);
 
     this.refreshCommitMeshes(this.DEFAULT_REPO);
 
@@ -208,6 +209,8 @@ class Canvas {
   }
 
   async refreshCommitMeshes (repository: string) {
+    this.messageMeshFactory = new MessageMeshFactory(this.japaneseFont || this.font);
+
     const commits = await this.commitLoader.load(repository);
 
     this.messageMeshes.forEach(a => this.scene.remove(a));
