@@ -30,7 +30,8 @@ class Canvas {
   private japaneseFont: Font;
   private backgroundTexture: Texture;
   private snowImage: Texture;
-  private repositoryInput: HTMLInputElement;
+  private repositoryInputElement: HTMLInputElement;
+  private loadingStatusElement: HTMLSpanElement;
   private renderer: WebGLRenderer;
   private camera: PerspectiveCamera;
   private scene: Scene;
@@ -50,16 +51,17 @@ class Canvas {
     this.loadingManager = new LoadingManager();
     this.commitLoader = new CommitLoader(process.env.API_ROOT + process.env.API_PREFIX);
 
-    this.repositoryInput = document.querySelector<HTMLInputElement>('.repository-input');
-    this.repositoryInput.addEventListener('keypress',this.onPressEnter.bind(this));
-    this.repositoryInput.value = this.DEFAULT_REPO;
+    this.loadingStatusElement = document.querySelector<HTMLSpanElement>('.loading-status');
+    this.repositoryInputElement = document.querySelector<HTMLInputElement>('.repository-input');
+    this.repositoryInputElement.addEventListener('keypress',this.onPressEnter.bind(this));
+    this.repositoryInputElement.value = this.DEFAULT_REPO;
   }
 
   async loadAssets () {
     const promise = new Promise((resolve, reject) => {
       this.loadingManager.onLoad = () => {
         resolve();
-        console.log('Loading complete!');
+        this.loadingStatusElement.textContent = 'Loading complete!';
       };
 
       this.loadingManager.onError = (url) => {
@@ -69,11 +71,11 @@ class Canvas {
     });
 
     this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
-      console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+      this.loadingStatusElement.textContent = `Loaded ${itemsLoaded} of ${itemsTotal} files.`;
     };
 
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+      this.loadingStatusElement.textContent = `Loaded ${itemsLoaded} of ${itemsTotal} files.`;
     };
 
     // 背景
@@ -86,7 +88,10 @@ class Canvas {
     new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', font => this.font = font);
 
     // 日本語フォント
-    new FontLoader().load('Mplus_1p_Regular.json', font => this.japaneseFont = font);
+    new FontLoader().load('Mplus_1p_Regular.json', font => {
+      this.japaneseFont = font;
+      this.loadingStatusElement.textContent = 'Loading complete!!';
+    });
 
     return promise;
   }
@@ -226,7 +231,7 @@ class Canvas {
   onPressEnter (e: KeyboardEvent) {
     if (e.keyCode !== 13) { return; }
 
-    this.refreshCommitMeshes(this.repositoryInput.value)
+    this.refreshCommitMeshes(this.repositoryInputElement.value)
   }
 
   onResize () {

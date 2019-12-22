@@ -38,7 +38,7 @@
             box-sizing: border-box;
         }
 
-        header .repository-input{
+        .repository-input{
             padding: 1rem 0;
             width: 40rem;
             border: none;
@@ -51,7 +51,7 @@
             outline: none;
         }
 
-        header .repository-input:focus {
+        .repository-input:focus {
             border-bottom-color: #227def;
         }
 
@@ -74,15 +74,33 @@
             opacity: 0;
         }
 
-        #main > h1 {
+        h1 {
             font-size: 10rem;
             font-weight: 100;
             color: #ddd;
         }
 
-        #main > h1 > span {
+        h1 > span {
             display: block;
             padding: 1rem 0;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .loading-status {
+            display: inline-block;
+            margin-left: auto;
+            padding: 1.5rem;
+            background: transparent;
+            font-size: 1.8rem;
+            color: #ddd;
         }
 
         /* 〜479px：SP縦
@@ -92,7 +110,7 @@
                 font-size: 25%;
             }
 
-            header .repository-input{
+            .repository-input{
                 width: 85%;
                 padding: 0.6rem 0;
                 font-size: 5rem;
@@ -129,5 +147,8 @@
             <span>変わる</span>
         </h1>
     </section>
+    <footer>
+        <span class="loading-status">Loading...</span>
+    </footer>
 </body>
 </html>
