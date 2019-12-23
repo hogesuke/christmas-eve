@@ -22,8 +22,6 @@ import CommitLoader from './CommitLoader';
 import SnowSprite from './SnowSprite';
 
 class Canvas {
-  private w: number;
-  private h: number;
   private loadingManager: LoadingManager;
   private commitLoader: CommitLoader;
   private font: Font;
@@ -43,11 +41,7 @@ class Canvas {
   private prevTimestamp: DOMHighResTimeStamp = 0;
   private readonly DEFAULT_REPO = 'hogesuke/christmas-eve';
 
-  constructor (w: number, h: number) {
-    // ウィンドウサイズ
-    this.w = w;
-    this.h = h;
-
+  constructor () {
     this.loadingManager = new LoadingManager();
     this.commitLoader = new CommitLoader(process.env.API_ROOT + process.env.API_PREFIX);
 
@@ -84,10 +78,10 @@ class Canvas {
     // 雪
     new TextureLoader(this.loadingManager).load('snow2.png', texture => this.snowImage = texture);
 
-    // フォント
+    // 欧文フォント
     new FontLoader(this.loadingManager).load('helvetiker_regular.typeface.json', font => this.font = font);
 
-    // 日本語フォント
+    // 和文フォント
     new FontLoader().load('Mplus_1p_Regular.json', font => {
       this.japaneseFont = font;
       this.loadingStatusElement.textContent = 'Loading complete!!';
@@ -97,18 +91,17 @@ class Canvas {
   }
 
   init () {
-    // レンダラーを作成
+    // レンダラー
     this.renderer = new WebGLRenderer({ alpha: true });
-    // this.renderer.setClearColor(0x000000, 1);
 
     // canvasを追加
     const container = document.getElementById("canvas-container");
     container.appendChild(this.renderer.domElement);
 
-    // シーンを作成
+    // シーン
     this.scene = new Scene();
 
-    // カメラを作成
+    // カメラ
     this.camera = new PerspectiveCamera();
     this.camera.fov = 60; // 視野角
     this.camera.near = 1; // カメラに映る最短距離
@@ -138,9 +131,9 @@ class Canvas {
       this.controls.maxPolarAngle = Math.PI;
     }
 
-    // ライトを作成
+    // ライト
     this.light = new PointLight(0xffffff);
-    this.light.position.set(0, 0, 0); // ライトの位置を設定
+    this.light.position.set(0, 0, 0);
 
     this.scene.add(this.light);
 
@@ -217,7 +210,7 @@ class Canvas {
   }
 }
 
-const canvas = new Canvas(window.innerWidth, window.innerHeight);
+const canvas = new Canvas();
 
 (async () => {
   await canvas.loadAssets();
