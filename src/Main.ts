@@ -177,28 +177,7 @@ class Canvas {
     this.prevTimestamp = currentTimestamp;
 
     this.messageMeshes.forEach(a => a.tick(sec));
-
-    this.snowSprites.forEach((particle) => {
-      particle.updatePhysics();
-
-      const p = particle.position;
-
-      if (p.y < -1000) {
-        p.y += 2000;
-      }
-
-      if (p.x > 1000) {
-        p.x -= 2000;
-      } else if (p.x < -1000) {
-        p.x += 2000;
-      }
-
-      if (p.z > 1000) {
-        p.z -= 2000;
-      } else if (p.z < -1000) {
-        p.z += 2000;
-      }
-    });
+    this.snowSprites.forEach(a => a.tick());
 
     this.controls.update();
 
