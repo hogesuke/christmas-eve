@@ -20,7 +20,29 @@ export default class SnowSprite extends Sprite {
     this.setRandomOriginalPosition();
   }
 
-  updatePhysics () {
+  tick () {
+    this.updatePhysics();
+
+    const p = this.position;
+
+    if (p.y < -1000) {
+      p.y += 2000;
+    }
+
+    if (p.x > 1000) {
+      p.x -= 2000;
+    } else if (p.x < -1000) {
+      p.x += 2000;
+    }
+
+    if (p.z > 1000) {
+      p.z -= 2000;
+    } else if (p.z < -1000) {
+      p.z += 2000;
+    }
+  }
+
+  private updatePhysics () {
     this.velocity.multiplyScalar(this.drag);
     this.velocity.add(this.gravity);
     this.position.add(this.velocity);

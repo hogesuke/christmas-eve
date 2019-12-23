@@ -14,7 +14,7 @@ export default class MessageMeshFactory {
     this.font = font;
   }
 
-  createMesh (commitLog: CommitLog) {
+  createMesh (commitLog: CommitLog, coefficient: number) {
     const textGeometry = new TextBufferGeometry(commitLog.getMessage(), {
       font: this.font,
       size: 20,
@@ -29,6 +29,6 @@ export default class MessageMeshFactory {
       new MeshPhongMaterial({ color: color.num() })
     ];
 
-    return new MessageMesh(textGeometry, materials);
+    return new MessageMesh(textGeometry, materials, coefficient);
   }
 }

@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+    <title>雨は夜更け過ぎにコミットログへ変わる</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- OGP基本共通設定 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://christmas-eve.hogesuke.net/" />
+    <meta property="og:image" content="https://christmas-eve.hogesuke.net/cap_1200x630.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:title" content="雨は夜更け過ぎにコミットログへ変わる" />
+    <meta property="og:site_name" content="hogesuke.net" />
+    <meta property="og:description" content="クソアプリ2 Qiita Advent Calendar 2019 の24日目のクソアプリです。あなたのコミットログを夜空に降らせます。" />
+    <!-- OGP Facebook用設定 -->
+    <meta property="fb:app_id" content="2583715158412441" />
+    <!-- OGP Twitter共通設定 -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@hogesuke_1" />
     <script src="bundle.js" defer></script>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:100&display=block" rel="stylesheet">
     <style>
@@ -114,6 +129,10 @@
                 width: 85%;
                 padding: 0.6rem 0;
                 font-size: 5rem;
+            }
+
+            .loading-status {
+                font-size: 3.5rem;
             }
         }
 
