@@ -41,7 +41,7 @@ class Canvas {
   private messageMeshes: MessageMesh[] = [];
   private snowSprites: SnowSprite[] = [];
   private prevTimestamp: DOMHighResTimeStamp = 0;
-  private readonly DEFAULT_REPO = 'hogesuke/gited';
+  private readonly DEFAULT_REPO = 'hogesuke/christmas-eve';
 
   constructor (w: number, h: number) {
     // ウィンドウサイズ
