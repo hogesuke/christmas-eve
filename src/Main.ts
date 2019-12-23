@@ -176,15 +176,7 @@ class Canvas {
 
     this.prevTimestamp = currentTimestamp;
 
-    this.messageMeshes.forEach(a => {
-      // a.rotation.y = a.rotation.y + sec * 0.5;
-
-      if (a.position.y < -1000) {
-        a.position.y = a.getOriginalPosition().y
-      } else {
-        a.position.y = a.position.y - sec * 100;
-      }
-    });
+    this.messageMeshes.forEach(a => a.tick(sec));
 
     this.snowSprites.forEach((particle) => {
       particle.updatePhysics();
@@ -221,8 +213,9 @@ class Canvas {
     this.messageMeshes.forEach(a => this.scene.remove(a));
     this.messageMeshes = [];
 
-    commits.forEach(commit => {
-      const messageMesh = this.messageMeshFactory.createMesh(commit);
+    commits.forEach((commit, index) => {
+      const coefficient = Math.ceil((index + 1) / 25);
+      const messageMesh = this.messageMeshFactory.createMesh(commit, coefficient);
       this.messageMeshes.push(messageMesh);
     });
     this.scene.add(...this.messageMeshes);
